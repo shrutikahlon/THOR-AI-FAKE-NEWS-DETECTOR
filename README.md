@@ -33,13 +33,25 @@ A premium, fully-functional fake news detection website with advanced Three.js l
 ## 📁 File Structure
 
 ```
-├── index.html          # Main HTML structure
-├── style.css           # Premium styling with glass morphism
-├── script.js           # Core application logic
-├── background.js       # Three.js liquid metal animation
-├── api.js              # News API integration
-├── auth.js             # Authentication system
-└── README.md           # Project documentation
+├── Frontend (Client-side)
+│   ├── index.html          # Main HTML structure
+│   ├── style.css           # Premium styling with glass morphism
+│   ├── script.js           # Core application logic
+│   ├── background.js       # Three.js liquid metal animation
+│   ├── api.js              # News API integration
+│   └── auth.js             # Authentication system
+├── Backend (Server-side)
+│   ├── server.js           # Node.js/Express server with logging
+│   ├── package.json        # Node.js dependencies
+│   └── .env                # Environment variables (API keys)
+├── Database
+│   └── database.sqlite     # SQLite database (auto-generated)
+├── Configuration
+│   ├── .gitignore          # Git ignore file
+│   ├── admin.html          # Admin dashboard
+│   └── README.md           # Project documentation
+└── Logs
+    └── loginLogs.txt       # Login activity logs (auto-generated)
 ```
 
 ## 🚀 Getting Started
