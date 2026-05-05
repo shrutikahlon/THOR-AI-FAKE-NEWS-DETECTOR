@@ -48,7 +48,6 @@ A premium, fully-functional fake news detection website with advanced Three.js l
 │   └── database.sqlite     # SQLite database (auto-generated)
 ├── Configuration
 │   ├── .gitignore          # Git ignore file
-│   ├── admin.html          # Admin dashboard
 │   └── README.md           # Project documentation
 └── Logs
     └── loginLogs.txt       # Login activity logs (auto-generated)
