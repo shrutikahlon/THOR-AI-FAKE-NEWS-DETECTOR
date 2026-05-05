@@ -1,20 +1,16 @@
 // API Integration Module for Fake News Detection
 class NewsAPIService {
     constructor() {
-        // API Keys (provided credentials)
+        // API Keys (only used APIs)
         this.apiKeys = {
             newsapi: 'e7ea77c7f3b5419eac4e0844d3a2c17c',
-            gnews: 'YOUR_GNEWS_KEY',
-            mediastack: 'YOUR_MEDIASTACK_KEY',
             guardian: 'e15f2f33-91ad-4e3c-ab1a-309a94452d02',
             nytimes: '9Cm9iT2JvN99gzf1bJlZpGRGEKscctFnWD79qyn4CYq1l3t4'
         };
         
-        // API endpoints
+        // API endpoints (only used APIs)
         this.endpoints = {
             newsapi: 'https://newsapi.org/v2/everything',
-            gnews: 'https://gnews.io/api/v4/search',
-            mediastack: 'http://api.mediastack.com/v1/news',
             guardian: 'https://content.guardianapis.com/search',
             nytimes: 'https://api.nytimes.com/svc/search/v2/articlesearch.json'
         };
@@ -30,15 +26,13 @@ class NewsAPIService {
             'nytimes.com',
             'washingtonpost.com',
             'theguardian.com',
+            'guardian.co.uk',
             'economist.com',
             'bloomberg.com',
             'ft.com',
             'cnbc.com',
             'forbes.com',
             'time.com',
-            'theguardian.com',
-            'guardian.co.uk',
-            'nytimes.com',
             'newyorktimes.com'
         ];
     }
@@ -99,43 +93,6 @@ class NewsAPIService {
         }
     }
 
-    // Search GNews
-    async searchGNews(keywords) {
-        try {
-            const query = keywords.join(' OR ');
-            const url = `${this.endpoints.gnews}?q=${encodeURIComponent(query)}&lang=en&country=us&max=10&apikey=${this.apiKeys.gnews}`;
-            
-            const response = await fetch(url);
-            if (!response.ok) {
-                throw new Error(`GNews error: ${response.status}`);
-            }
-            
-            const data = await response.json();
-            return this.formatGNewsResults(data.articles);
-        } catch (error) {
-            console.error('GNews Error:', error);
-            return [];
-        }
-    }
-
-    // Search Mediastack
-    async searchMediastack(keywords) {
-        try {
-            const query = keywords.join(' OR ');
-            const url = `${this.endpoints.mediastack}?keywords=${encodeURIComponent(query)}&countries=us&languages=en&limit=10&access_key=${this.apiKeys.mediastack}`;
-            
-            const response = await fetch(url);
-            if (!response.ok) {
-                throw new Error(`Mediastack error: ${response.status}`);
-            }
-            
-            const data = await response.json();
-            return this.formatMediastackResults(data.data);
-        } catch (error) {
-            console.error('Mediastack Error:', error);
-            return [];
-        }
-    }
 
     // Search Guardian API
     async searchGuardian(keywords) {
@@ -187,29 +144,6 @@ class NewsAPIService {
         }));
     }
 
-    // Format GNews results
-    formatGNewsResults(articles) {
-        return articles.map(article => ({
-            title: article.title,
-            description: article.description,
-            source: article.source.name,
-            url: article.url,
-            publishedAt: article.publishedAt,
-            isTrusted: this.isTrustedSource(article.source.name)
-        }));
-    }
-
-    // Format Mediastack results
-    formatMediastackResults(articles) {
-        return articles.map(article => ({
-            title: article.title,
-            description: article.description,
-            source: article.source,
-            url: article.url,
-            publishedAt: article.published_at,
-            isTrusted: this.isTrustedSource(article.source)
-        }));
-    }
 
     // Format Guardian API results
     formatGuardianResults(articles) {
@@ -245,16 +179,14 @@ class NewsAPIService {
     // Search all APIs simultaneously
     async searchAllAPIs(keywords) {
         try {
-            const [newsapiResults, gnewsResults, mediastackResults, guardianResults, nytimesResults] = await Promise.all([
+            const [newsapiResults, guardianResults, nytimesResults] = await Promise.all([
                 this.searchNewsAPI(keywords),
-                this.searchGNews(keywords),
-                this.searchMediastack(keywords),
                 this.searchGuardian(keywords),
                 this.searchNYTimes(keywords)
             ]);
             
             // Combine and deduplicate results
-            const allResults = [...newsapiResults, ...gnewsResults, ...mediastackResults, ...guardianResults, ...nytimesResults];
+            const allResults = [...newsapiResults, ...guardianResults, ...nytimesResults];
             const uniqueResults = this.deduplicateResults(allResults);
             
             return uniqueResults;
@@ -277,96 +209,10 @@ class NewsAPIService {
         });
     }
 
-    // Simulate API responses for demo purposes (when API keys are not provided)
-    async simulateAPIResponse(keywords) {
-        // Simulate API delay
-        await new Promise(resolve => setTimeout(resolve, 1000 + Math.random() * 1000));
-        
-        // Generate mock articles based on keywords
-        const mockArticles = this.generateMockArticles(keywords);
-        return mockArticles;
-    }
-
-    // Generate mock articles for demonstration
-    generateMockArticles(keywords) {
-        const mockData = {
-            'trump': [
-                {
-                    title: 'Trump Announces New Policy Initiative',
-                    description: 'Former President Donald Trump revealed his latest policy proposal during a rally in Florida.',
-                    source: 'CNN',
-                    url: 'https://example.com/trump-policy',
-                    publishedAt: new Date().toISOString(),
-                    isTrusted: true
-                }
-            ],
-            'biden': [
-                {
-                    title: 'Biden Addresses Climate Change Summit',
-                    description: 'President Joe Biden delivered a keynote speech at the United Nations Climate Change Conference.',
-                    source: 'Reuters',
-                    url: 'https://example.com/biden-climate',
-                    publishedAt: new Date().toISOString(),
-                    isTrusted: true
-                }
-            ],
-            'covid': [
-                {
-                    title: 'New COVID-19 Variant Detected',
-                    description: 'Health officials monitor new coronavirus strain discovered in multiple countries.',
-                    source: 'BBC News',
-                    url: 'https://example.com/covid-variant',
-                    publishedAt: new Date().toISOString(),
-                    isTrusted: true
-                }
-            ],
-            'election': [
-                {
-                    title: 'Election Results Certified by Officials',
-                    description: 'State election officials have certified the results following comprehensive audits.',
-                    source: 'Associated Press',
-                    url: 'https://example.com/election-results',
-                    publishedAt: new Date().toISOString(),
-                    isTrusted: true
-                }
-            ]
-        };
-
-        const results = [];
-        keywords.forEach(keyword => {
-            if (mockData[keyword.toLowerCase()]) {
-                results.push(...mockData[keyword.toLowerCase()]);
-            }
-        });
-
-        // Add some random articles if no specific matches
-        if (results.length === 0) {
-            results.push({
-                title: 'Breaking News: Major Development Reported',
-                description: 'Significant events unfolding as authorities respond to the situation.',
-                source: 'Reuters',
-                url: 'https://example.com/breaking-news',
-                publishedAt: new Date().toISOString(),
-                isTrusted: true
-            });
-        }
-
-        return results;
-    }
-
-    // Main search method with fallback to simulation
+    
+    // Main search method
     async search(keywords) {
-        // Check if we have real API keys
-        const hasRealKeys = Object.values(this.apiKeys).some(key => 
-            key && !key.startsWith('YOUR_')
-        );
-
-        if (hasRealKeys) {
-            return await this.searchAllAPIs(keywords);
-        } else {
-            // Use simulated data for demo
-            return await this.simulateAPIResponse(keywords);
-        }
+        return await this.searchAllAPIs(keywords);
     }
 }
 
