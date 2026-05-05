@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fake News Detector - AI-Powered Detection</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+</head>
+<body>
+    <!-- Three.js Background Canvas -->
+    <canvas id="bg-canvas"></canvas>
+
+    <!-- Navigation -->
+    <nav class="navbar" id="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <h2>FakeNews<span class="accent">AI</span></h2>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="#home" class="nav-link">Home</a></li>
+                <li><a href="#about" class="nav-link">About</a></li>
+                <li><a href="#services" class="nav-link">Services</a></li>
+                <li><a href="#auth" class="nav-link auth-login">Login</a></li>
+                <li><a href="#auth" class="nav-link auth-signup">Signup</a></li>
+            </ul>
+            <div class="hamburger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section id="home" class="hero">
+        <div class="hero-content">
+            <h1 class="hero-title fade-in">Detect Fake News <span class="accent">Instantly</span></h1>
+            <p class="hero-subtitle fade-in">Advanced AI-powered analysis to identify misinformation and verify news authenticity in real-time</p>
+            <button class="cta-button fade-in" onclick="scrollToDetector()">
+                <span>Analyze Now</span>
+                <div class="button-glow"></div>
+            </button>
+            <div class="scroll-indicator fade-in">
+                <div class="scroll-arrow"></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Detector Section -->
+    <section id="detector" class="detector">
+        <div class="detector-container">
+            <div class="glass-card">
+                <h2 class="detector-title">News Analyzer</h2>
+                <div class="input-group">
+                    <textarea 
+                        id="news-input" 
+                        class="news-input" 
+                        placeholder="Paste news headline or content..."
+                        rows="4"
+                    ></textarea>
+                </div>
+                <button id="analyze-btn" class="analyze-btn">
+                    <span>Analyze</span>
+                    <div class="btn-loader"></div>
+                </button>
+                
+                <!-- Results Section -->
+                <div id="results" class="results hidden">
+                    <div class="result-header">
+                        <h3 id="result-title" class="result-title">Analysis Result</h3>
+                        <div id="confidence-badge" class="confidence-badge">
+                            <span id="confidence-text">0%</span>
+                        </div>
+                    </div>
+                    
+                    <div id="result-status" class="result-status">
+                        <div class="status-icon"></div>
+                        <span id="status-text">Analyzing...</span>
+                    </div>
+
+                    <div class="progress-container">
+                        <div id="progress-bar" class="progress-bar">
+                            <div class="progress-fill"></div>
+                        </div>
+                    </div>
+
+                    <div class="probability-chart">
+                        <h4>Probability Analysis</h4>
+                        <div class="chart-bars">
+                            <div class="bar-group">
+                                <div class="bar-label">Real</div>
+                                <div class="bar-container">
+                                    <div id="real-bar" class="bar real-bar">
+                                        <span id="real-percent">0%</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="bar-group">
+                                <div class="bar-label">Fake</div>
+                                <div class="bar-container">
+                                    <div id="fake-bar" class="bar fake-bar">
+                                        <span id="fake-percent">0%</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="references">
+                        <h4>Reference Articles</h4>
+                        <div id="references-list" class="references-list">
+                            <!-- References will be populated here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section id="about" class="about">
+        <div class="container">
+            <h2 class="section-title">About Fake News Detection</h2>
+            <div class="cards-grid">
+                <div class="info-card">
+                    <div class="card-icon">📰</div>
+                    <h3>What is Fake News?</h3>
+                    <p>Fake news refers to deliberately fabricated information that mimics news media content in form but lacks the news media's editorial standards and processes.</p>
+                </div>
+                <div class="info-card">
+                    <div class="card-icon">🔍</div>
+                    <h3>How Detection Works</h3>
+                    <p>Our system uses advanced AI algorithms to analyze news content, cross-reference with reliable sources, and identify patterns typical of misinformation.</p>
+                </div>
+                <div class="info-card">
+                    <div class="card-icon">🛡️</div>
+                    <h3>Why It Matters</h3>
+                    <p>Detecting fake news helps protect democracy, prevents the spread of harmful misinformation, and maintains public trust in legitimate journalism.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Services Section -->
+    <section id="services" class="services">
+        <div class="container">
+            <h2 class="section-title">Our Services</h2>
+            <div class="services-grid">
+                <div class="service-card">
+                    <div class="service-icon">🌐</div>
+                    <h3>API-Based Detection</h3>
+                    <p>Real-time analysis using multiple news APIs to verify information authenticity across thousands of sources.</p>
+                </div>
+                <div class="service-card">
+                    <div class="service-icon">📊</div>
+                    <h3>Keyword Analysis</h3>
+                    <p>Advanced keyword extraction and semantic analysis to identify suspicious patterns and language cues.</p>
+                </div>
+                <div class="service-card">
+                    <div class="service-icon">✅</div>
+                    <h3>Source Validation</h3>
+                    <p>Comprehensive source credibility assessment and fact-checking against established news organizations.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Authentication Section -->
+    <section id="auth" class="auth">
+        <div class="container">
+            <div class="auth-container">
+                <div class="auth-card">
+                    <div class="auth-tabs">
+                        <button class="auth-tab active" data-tab="login">Login</button>
+                        <button class="auth-tab" data-tab="signup">Signup</button>
+                    </div>
+                    
+                    <!-- Login Form -->
+                    <form id="login-form" class="auth-form active">
+                        <div class="form-group">
+                            <input type="email" id="login-email" required>
+                            <label for="login-email">Email</label>
+                        </div>
+                        <div class="form-group">
+                            <input type="password" id="login-password" required>
+                            <label for="login-password">Password</label>
+                        </div>
+                        <button type="submit" class="auth-btn">Login</button>
+                    </form>
+
+                    <!-- Signup Form -->
+                    <form id="signup-form" class="auth-form">
+                        <div class="form-group">
+                            <input type="text" id="signup-name" required>
+                            <label for="signup-name">Full Name</label>
+                        </div>
+                        <div class="form-group">
+                            <input type="email" id="signup-email" required>
+                            <label for="signup-email">Email</label>
+                        </div>
+                        <div class="form-group">
+                            <input type="password" id="signup-password" required>
+                            <label for="signup-password">Password</label>
+                        </div>
+                        <button type="submit" class="auth-btn">Create Account</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>About FakeNewsAI</h3>
+                    <p>Advanced AI-powered fake news detection platform helping users identify misinformation and verify news authenticity.</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Quick Links</h4>
+                    <ul>
+                        <li><a href="#home">Home</a></li>
+                        <li><a href="#about">About</a></li>
+                        <li><a href="#services">Services</a></li>
+                        <li><a href="#auth">Get Started</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Contact</h4>
+                    <p>Email: info@fakenewsai.com</p>
+                    <div class="social-links">
+                        <a href="#" class="social-link">📧</a>
+                        <a href="#" class="social-link">🐦</a>
+                        <a href="#" class="social-link">📱</a>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 FakeNewsAI. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="background.js"></script>
+    <script src="api.js"></script>
+    <script src="auth.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
