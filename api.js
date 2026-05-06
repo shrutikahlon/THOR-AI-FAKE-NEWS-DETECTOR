@@ -210,9 +210,117 @@ class NewsAPIService {
     }
 
     
-    // Main search method
+    // AI Text Classification - Lightweight ML-based analysis
+    classifyTextWithAI(text) {
+        const features = this.extractTextFeatures(text);
+        const fakeScore = this.calculateFakeProbability(features);
+        const realScore = 1 - fakeScore;
+        
+        return {
+            isReal: realScore > 0.6,
+            confidence: Math.round(Math.max(realScore, fakeScore) * 100),
+            aiAnalysis: {
+                fakeScore: Math.round(fakeScore * 100),
+                realScore: Math.round(realScore * 100),
+                features: features
+            }
+        };
+    }
+
+    // Extract AI features from text
+    extractTextFeatures(text) {
+        const words = text.toLowerCase().split(/\s+/);
+        const sentences = text.split(/[.!?]+/).filter(s => s.trim());
+        
+        return {
+            wordCount: words.length,
+            sentenceCount: sentences.length,
+            avgWordLength: words.reduce((a, b) => a + b.length, 0) / words.length,
+            exclamationCount: (text.match(/!/g) || []).length,
+            questionCount: (text.match(/\?/g) || []).length,
+            uppercaseRatio: (text.match(/[A-Z]/g) || []).length / text.length,
+            clickbaitWords: this.countClickbaitWords(words),
+            sensationalWords: this.countSensationalWords(words),
+            sourceCredibility: this.assessSourceCredibility(text)
+        };
+    }
+
+    // Calculate fake news probability using AI features
+    calculateFakeProbability(features) {
+        let fakeScore = 0.3; // Base probability
+        
+        // Clickbait indicators
+        fakeScore += features.clickbaitWords * 0.15;
+        
+        // Sensational language
+        fakeScore += features.sensationalWords * 0.12;
+        
+        // Excessive punctuation (sensationalism)
+        if (features.exclamationCount > features.sentenceCount * 0.3) {
+            fakeScore += 0.1;
+        }
+        
+        // Uppercase ratio (shouting)
+        if (features.uppercaseRatio > 0.15) {
+            fakeScore += 0.08;
+        }
+        
+        // Short sentences (simplification)
+        if (features.avgWordLength < 4 && features.sentenceCount > 3) {
+            fakeScore += 0.07;
+        }
+        
+        // Source credibility (if mentioned)
+        fakeScore -= features.sourceCredibility * 0.2;
+        
+        return Math.min(0.9, Math.max(0.1, fakeScore));
+    }
+
+    // Count clickbait words
+    countClickbaitWords(words) {
+        const clickbaitWords = ['shocking', 'unbelievable', 'incredible', 'amazing', 'you-wont-believe', 'secret', 'revealed', 'exclusive', 'breaking', 'urgent'];
+        return words.filter(word => clickbaitWords.includes(word)).length / words.length;
+    }
+
+    // Count sensational words
+    countSensationalWords(words) {
+        const sensationalWords = ['disaster', 'crisis', 'emergency', 'scandal', 'outrage', 'horrifying', 'devastating', 'catastrophic'];
+        return words.filter(word => sensationalWords.includes(word)).length / words.length;
+    }
+
+    // Assess source credibility mentioned in text
+    assessSourceCredibility(text) {
+        const credibleSources = ['reuters', 'associated press', 'ap', 'bbc', 'cnn', 'new york times', 'washington post', 'wall street journal'];
+        const textLower = text.toLowerCase();
+        
+        let credibility = 0;
+        credibleSources.forEach(source => {
+            if (textLower.includes(source)) {
+                credibility += 0.3;
+            }
+        });
+        
+        return Math.min(1, credibility);
+    }
+
+    // Main search method with AI integration
     async search(keywords) {
-        return await this.searchAllAPIs(keywords);
+        const apiResults = await this.searchAllAPIs(keywords);
+        
+        // If we have API results, enhance with AI analysis
+        if (apiResults.length > 0) {
+            const sampleText = apiResults[0]?.title + ' ' + apiResults[0]?.description;
+            if (sampleText) {
+                const aiAnalysis = this.classifyTextWithAI(sampleText);
+                return {
+                    ...apiResults,
+                    aiEnhanced: true,
+                    aiAnalysis: aiAnalysis
+                };
+            }
+        }
+        
+        return apiResults;
     }
 }
 

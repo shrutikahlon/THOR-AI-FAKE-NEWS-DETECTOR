@@ -234,11 +234,25 @@ class FakeNewsDetector {
             // Search APIs
             const articles = await this.newsAPI.search(keywords);
             
-            // Analyze results
-            const analysis = this.analyzeResults(text, articles, keywords);
-            
-            // Display results
-            await this.displayResults(analysis);
+            // Check if API results have AI analysis
+            if (articles.aiEnhanced) {
+                // Use AI-enhanced analysis
+                const aiAnalysis = articles.aiAnalysis;
+                const combinedAnalysis = {
+                    ...this.analyzeResults(text, articles, keywords),
+                    aiAnalysis: aiAnalysis,
+                    verdict: aiAnalysis.isReal ? 'VERIFIED' : 'NEEDS_VERIFICATION',
+                    confidence: Math.max(
+                        this.analyzeResults(text, articles, keywords).confidence,
+                        aiAnalysis.confidence
+                    )
+                };
+                await this.displayResults(combinedAnalysis);
+            } else {
+                // Use traditional analysis
+                const analysis = this.analyzeResults(text, articles, keywords);
+                await this.displayResults(analysis);
+            }
 
         } catch (error) {
             console.error('Analysis error:', error);
