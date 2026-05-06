@@ -11,12 +11,10 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 const JWT_SECRET = process.env.JWT_SECRET || 'your-jwt-secret-key-here-change-in-production';
 
-// Middleware
 app.use(cors());
 app.use(express.json());
-app.use(express.static('.')); // Serve static files
+app.use(express.static('.'));
 
-// Initialize SQLite database
 const db = new sqlite3.Database('./database.sqlite', (err) => {
     if (err) {
         console.error('Error opening database:', err.message);
@@ -26,9 +24,7 @@ const db = new sqlite3.Database('./database.sqlite', (err) => {
     }
 });
 
-// Initialize database tables
 function initializeTables() {
-    // Users table
     db.run(`CREATE TABLE IF NOT EXISTS users (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         name TEXT NOT NULL,
@@ -44,7 +40,6 @@ function initializeTables() {
         }
     });
 
-    // Analysis history table
     db.run(`CREATE TABLE IF NOT EXISTS analysis_history (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         user_id INTEGER,
@@ -62,7 +57,6 @@ function initializeTables() {
     });
 }
 
-// Login logging function
 function logLoginAttempt(email, status, req) {
     const timestamp = new Date().toLocaleString('en-US', { 
         year: 'numeric', 
@@ -75,14 +69,12 @@ function logLoginAttempt(email, status, req) {
     const ip = req.ip || req.connection.remoteAddress || req.socket.remoteAddress || 'unknown';
     const userAgent = req.get('User-Agent') || 'unknown';
     
-    // Console logging
     if (status === 'SUCCESS') {
         console.log(`[LOGIN SUCCESS] ${email} | ${timestamp} | IP: ${ip} | ${userAgent}`);
     } else {
         console.log(`[LOGIN FAILED] ${email} | ${timestamp} | IP: ${ip} | ${userAgent}`);
     }
     
-    // File logging
     const logEntry = `[${status}] ${email} | ${timestamp} | IP: ${ip} | ${userAgent}\n`;
     
     try {
@@ -92,7 +84,6 @@ function logLoginAttempt(email, status, req) {
     }
 }
 
-// Middleware to verify JWT token
 function authenticateToken(req, res, next) {
     const authHeader = req.headers['authorization'];
     const token = authHeader && authHeader.split(' ')[1];
@@ -110,9 +101,7 @@ function authenticateToken(req, res, next) {
     });
 }
 
-// Routes
 
-// Register new user
 app.post('/api/auth/register', async (req, res) => {
     try {
         const { name, email, password } = req.body;
@@ -135,7 +124,6 @@ app.post('/api/auth/register', async (req, res) => {
             return res.status(400).json({ error: 'Invalid email format' });
         }
 
-        // Check if user already exists
         db.get('SELECT id FROM users WHERE email = ?', [email], async (err, row) => {
             if (err) {
                 return res.status(500).json({ error: 'Database error' });
@@ -145,10 +133,8 @@ app.post('/api/auth/register', async (req, res) => {
                 return res.status(400).json({ error: 'User already exists' });
             }
 
-            // Hash password
             const hashedPassword = await bcrypt.hash(password, 10);
 
-            // Create new user
             db.run('INSERT INTO users (name, email, password) VALUES (?, ?, ?)', 
                 [name, email, hashedPassword], 
                 function(err) {
@@ -156,7 +142,6 @@ app.post('/api/auth/register', async (req, res) => {
                         return res.status(500).json({ error: 'Failed to create user' });
                     }
 
-                    // Generate JWT token
                     const token = jwt.sign(
                         { id: this.lastID, name, email },
                         JWT_SECRET,
@@ -181,44 +166,35 @@ app.post('/api/auth/register', async (req, res) => {
     }
 });
 
-// Login user
 app.post('/api/auth/login', async (req, res) => {
     try {
         const { email, password } = req.body;
 
         // Validation
         if (!email || !password) {
-            // Log failed login attempt - missing credentials
             logLoginAttempt(email || 'unknown', 'FAILED', req);
             return res.status(400).json({ error: 'Email and password are required' });
         }
 
-        // Find user
         db.get('SELECT * FROM users WHERE email = ?', [email], async (err, user) => {
             if (err) {
-                // Log failed login attempt - database error
                 logLoginAttempt(email, 'FAILED', req);
                 return res.status(500).json({ error: 'Database error' });
             }
 
             if (!user) {
-                // Log failed login attempt - user not found
                 logLoginAttempt(email, 'FAILED', req);
                 return res.status(401).json({ error: 'Invalid credentials' });
             }
 
-            // Compare passwords
             const isValidPassword = await bcrypt.compare(password, user.password);
             if (!isValidPassword) {
-                // Log failed login attempt - wrong password
                 logLoginAttempt(email, 'FAILED', req);
                 return res.status(401).json({ error: 'Invalid credentials' });
             }
 
-            // Log successful login attempt
             logLoginAttempt(email, 'SUCCESS', req);
 
-            // Generate JWT token
             const token = jwt.sign(
                 { id: user.id, name: user.name, email: user.email },
                 JWT_SECRET,
@@ -243,7 +219,6 @@ app.post('/api/auth/login', async (req, res) => {
     }
 });
 
-// Get user profile
 app.get('/api/auth/profile', authenticateToken, (req, res) => {
     db.get('SELECT id, name, email, analyses, created_at FROM users WHERE id = ?', 
         [req.user.id], 
@@ -259,7 +234,6 @@ app.get('/api/auth/profile', authenticateToken, (req, res) => {
     );
 });
 
-// Update user analysis count
 app.post('/api/auth/increment-analysis', authenticateToken, (req, res) => {
     db.run('UPDATE users SET analyses = analyses + 1 WHERE id = ?', 
         [req.user.id], 
@@ -272,7 +246,6 @@ app.post('/api/auth/increment-analysis', authenticateToken, (req, res) => {
     );
 });
 
-// Save analysis history
 app.post('/api/analysis/save', authenticateToken, (req, res) => {
     const { content, result, confidence } = req.body;
     
@@ -287,7 +260,6 @@ app.post('/api/analysis/save', authenticateToken, (req, res) => {
     );
 });
 
-// Get analysis history
 app.get('/api/analysis/history', authenticateToken, (req, res) => {
     db.all('SELECT * FROM analysis_history WHERE user_id = ? ORDER BY created_at DESC LIMIT 50', 
         [req.user.id], 
@@ -300,7 +272,6 @@ app.get('/api/analysis/history', authenticateToken, (req, res) => {
     );
 });
 
-// Health check endpoint
 app.get('/api/health', (req, res) => {
     res.json({ 
         status: 'OK', 
@@ -309,7 +280,6 @@ app.get('/api/health', (req, res) => {
     });
 });
 
-// Admin endpoints to view data (for development/testing)
 app.get('/api/admin/users', (req, res) => {
     db.all('SELECT id, name, email, created_at, analyses FROM users ORDER BY created_at DESC', 
         (err, rows) => {
@@ -342,7 +312,6 @@ app.get('/api/admin/analysis-history', (req, res) => {
     });
 });
 
-// Database stats endpoint
 app.get('/api/admin/stats', (req, res) => {
     db.get('SELECT COUNT(*) as totalUsers FROM users', (err, userCount) => {
         if (err) {
@@ -363,7 +332,6 @@ app.get('/api/admin/stats', (req, res) => {
     });
 });
 
-// Backend logs endpoint - returns login logs
 app.get('/backend-logs', (req, res) => {
     try {
         if (fs.existsSync('loginLogs.txt')) {
@@ -379,25 +347,21 @@ app.get('/backend-logs', (req, res) => {
     }
 });
 
-// Serve the main HTML file for all other routes
 app.get('*', (req, res) => {
     res.sendFile(path.join(__dirname, 'index.html'));
 });
 
-// Error handling middleware
 app.use((err, req, res, next) => {
     console.error(err.stack);
     res.status(500).json({ error: 'Something went wrong!' });
 });
 
-// Start server
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
     console.log(`Backend API available at http://localhost:${PORT}/api`);
     console.log(`Frontend available at http://localhost:${PORT}`);
 });
 
-// Graceful shutdown
 process.on('SIGINT', () => {
     console.log('Shutting down server...');
     db.close((err) => {

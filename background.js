@@ -1,4 +1,3 @@
-// Three.js Liquid Metal Background Animation
 class LiquidMetalBackground {
     constructor() {
         this.canvas = document.getElementById('bg-canvas');
@@ -17,10 +16,8 @@ class LiquidMetalBackground {
     }
 
     init() {
-        // Scene setup
         this.scene = new THREE.Scene();
         
-        // Camera setup
         this.camera = new THREE.PerspectiveCamera(
             75,
             window.innerWidth / window.innerHeight,
@@ -29,7 +26,6 @@ class LiquidMetalBackground {
         );
         this.camera.position.z = 1;
 
-        // Renderer setup
         this.renderer = new THREE.WebGLRenderer({
             canvas: this.canvas,
             antialias: true,
@@ -38,7 +34,6 @@ class LiquidMetalBackground {
         this.renderer.setSize(window.innerWidth, window.innerHeight);
         this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 
-        // Create plane geometry
         this.geometry = new THREE.PlaneGeometry(2, 2, 512, 512);
 
         // Vertex shader
@@ -183,13 +178,11 @@ class LiquidMetalBackground {
             side: THREE.DoubleSide
         });
 
-        // Create mesh
-        this.mesh = new THREE.Mesh(this.geometry, this.material);
-        this.scene.add(this.mesh);
+        sh = new THREE.Mesh(this.geometry, this.material);
+        this.scene.add(sh);
     }
 
     setupEventListeners() {
-        // Mouse movement
         window.addEventListener('mousemove', (event) => {
             this.mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
             this.mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
@@ -199,7 +192,6 @@ class LiquidMetalBackground {
             }
         });
 
-        // Window resize
         window.addEventListener('resize', () => {
             this.camera.aspect = window.innerWidth / window.innerHeight;
             this.camera.updateProjectionMatrix();
@@ -207,19 +199,6 @@ class LiquidMetalBackground {
             
             if (this.material) {
                 this.material.uniforms.u_resolution.value.set(window.innerWidth, window.innerHeight);
-            }
-        });
-
-        // Touch events for mobile
-        window.addEventListener('touchmove', (event) => {
-            if (event.touches.length > 0) {
-                const touch = event.touches[0];
-                this.mouse.x = (touch.clientX / window.innerWidth) * 2 - 1;
-                this.mouse.y = -(touch.clientY / window.innerHeight) * 2 + 1;
-                
-                if (this.material) {
-                    this.material.uniforms.u_mouse.value.set(this.mouse.x, this.mouse.y);
-                }
             }
         });
     }

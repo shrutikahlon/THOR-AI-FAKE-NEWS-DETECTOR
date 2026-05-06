@@ -8,10 +8,8 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 </head>
 <body>
-    <!-- Three.js Background Canvas -->
     <canvas id="bg-canvas"></canvas>
 
-    <!-- Navigation -->
     <nav class="navbar" id="navbar">
         <div class="nav-container">
             <div class="nav-logo">
@@ -32,7 +30,6 @@
         </div>
     </nav>
 
-    <!-- Hero Section -->
     <section id="home" class="hero">
         <div class="hero-content">
             <h1 class="hero-title fade-in">Detect Fake News <span class="accent">Instantly</span></h1>
@@ -47,7 +44,6 @@
         </div>
     </section>
 
-    <!-- Detector Section -->
     <section id="detector" class="detector">
         <div class="detector-container">
             <div class="glass-card">
@@ -65,7 +61,6 @@
                     <div class="btn-loader"></div>
                 </button>
                 
-                <!-- Results Section -->
                 <div id="results" class="results hidden">
                     <div class="result-header">
                         <h3 id="result-title" class="result-title">Analysis Result</h3>
@@ -110,7 +105,6 @@
                     <div class="references">
                         <h4>Reference Articles</h4>
                         <div id="references-list" class="references-list">
-                            <!-- References will be populated here -->
                         </div>
                     </div>
                 </div>
@@ -118,7 +112,6 @@
         </div>
     </section>
 
-    <!-- About Section -->
     <section id="about" class="about">
         <div class="container">
             <h2 class="section-title">About Fake News Detection</h2>
@@ -142,7 +135,6 @@
         </div>
     </section>
 
-    <!-- Services Section -->
     <section id="services" class="services">
         <div class="container">
             <h2 class="section-title">Our Services</h2>
@@ -166,7 +158,6 @@
         </div>
     </section>
 
-    <!-- Authentication Section -->
     <section id="auth" class="auth">
         <div class="container">
             <div class="auth-container">
@@ -176,7 +167,6 @@
                         <button class="auth-tab" data-tab="signup">Signup</button>
                     </div>
                     
-                    <!-- Login Form -->
                     <form id="login-form" class="auth-form active">
                         <div class="form-group">
                             <input type="email" id="login-email" required>
@@ -189,7 +179,6 @@
                         <button type="submit" class="auth-btn">Login</button>
                     </form>
 
-                    <!-- Signup Form -->
                     <form id="signup-form" class="auth-form">
                         <div class="form-group">
                             <input type="text" id="signup-name" required>
@@ -210,7 +199,6 @@
         </div>
     </section>
 
-    <!-- Footer -->
     <footer class="footer">
         <div class="container">
             <div class="footer-content">
@@ -243,7 +231,6 @@
         </div>
     </footer>
 
-    <!-- Scripts -->
     <script src="background.js"></script>
     <script src="api.js"></script>
     <script src="auth.js"></script>

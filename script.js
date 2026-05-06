@@ -1,10 +1,8 @@
-// Main Application Logic for Fake News Detector
 class FakeNewsDetector {
     constructor() {
         this.newsAPI = new NewsAPIService();
         this.isAnalyzing = false;
         
-        // Hardcoded rules for specific content
         this.hardcodedRules = {
             fake: [
                 {
@@ -221,22 +219,17 @@ class FakeNewsDetector {
         this.setLoadingState(true);
 
         try {
-            // Check hardcoded rules first
             const hardcodedResult = this.checkHardcodedRules(text);
             if (hardcodedResult) {
                 await this.displayResults(hardcodedResult);
                 return;
             }
 
-            // Extract keywords
             const keywords = this.newsAPI.extractKeywords(text);
             
-            // Search APIs
             const articles = await this.newsAPI.search(keywords);
             
-            // Check if API results have AI analysis
             if (articles.aiEnhanced) {
-                // Use AI-enhanced analysis
                 const aiAnalysis = articles.aiAnalysis;
                 const combinedAnalysis = {
                     ...this.analyzeResults(text, articles, keywords),
@@ -248,8 +241,6 @@ class FakeNewsDetector {
                     )
                 };
                 await this.displayResults(combinedAnalysis);
-            } else {
-                // Use traditional analysis
                 const analysis = this.analyzeResults(text, articles, keywords);
                 await this.displayResults(analysis);
             }

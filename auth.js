@@ -1,4 +1,3 @@
-// Authentication System for Fake News Detector
 class AuthSystem {
     constructor() {
         this.currentUser = null;
@@ -21,11 +20,9 @@ class AuthSystem {
             tab.addEventListener('click', () => {
                 const targetTab = tab.dataset.tab;
                 
-                // Update active tab
                 tabs.forEach(t => t.classList.remove('active'));
                 tab.classList.add('active');
                 
-                // Update active form
                 forms.forEach(form => {
                     form.classList.remove('active');
                     if (form.id === `${targetTab}-form`) {
@@ -37,7 +34,6 @@ class AuthSystem {
     }
 
     setupForms() {
-        // Login form
         const loginForm = document.getElementById('login-form');
         if (loginForm) {
             loginForm.addEventListener('submit', (e) => {
@@ -46,7 +42,6 @@ class AuthSystem {
             });
         }
 
-        // Signup form
         const signupForm = document.getElementById('signup-form');
         if (signupForm) {
             signupForm.addEventListener('submit', (e) => {
@@ -60,7 +55,6 @@ class AuthSystem {
         const email = form.querySelector('#login-email').value;
         const password = form.querySelector('#login-password').value;
 
-        // Basic validation
         if (!this.validateEmail(email)) {
             this.showAuthError('Please enter a valid email address');
             return;
@@ -90,7 +84,6 @@ class AuthSystem {
             const data = await response.json();
 
             if (response.ok) {
-                // Successful login
                 this.currentUser = data.user;
                 this.token = data.token;
                 localStorage.setItem('currentUser', JSON.stringify(data.user));
@@ -114,7 +107,6 @@ class AuthSystem {
         const email = form.querySelector('#signup-email').value;
         const password = form.querySelector('#signup-password').value;
 
-        // Validation
         if (name.length < 2) {
             this.showAuthError('Name must be at least 2 characters');
             return;
@@ -149,7 +141,6 @@ class AuthSystem {
             const data = await response.json();
 
             if (response.ok) {
-                // Successful registration
                 this.currentUser = data.user;
                 this.token = data.token;
                 localStorage.setItem('currentUser', JSON.stringify(data.user));
@@ -175,18 +166,15 @@ class AuthSystem {
     }
 
     hashPassword(password) {
-        // Simple hash for demo (in production, use proper hashing)
         let hash = 0;
         for (let i = 0; i < password.length; i++) {
             const char = password.charCodeAt(i);
             hash = ((hash << 5) - hash) + char;
-            hash = hash & hash; // Convert to 32-bit integer
         }
         return hash.toString();
     }
 
     simulateAuthCall() {
-        // Simulate network delay
         return new Promise(resolve => setTimeout(resolve, 1000 + Math.random() * 1000));
     }
 
@@ -199,7 +187,6 @@ class AuthSystem {
     }
 
     showAuthNotification(message, type) {
-        // Remove existing notifications
         const existing = document.querySelector('.auth-notification');
         if (existing) {
             existing.remove();
@@ -223,7 +210,6 @@ class AuthSystem {
 
         document.body.appendChild(notification);
 
-        // Remove after 3 seconds
         setTimeout(() => {
             notification.style.animation = 'fadeOut 0.3s ease';
             setTimeout(() => {
@@ -235,10 +221,8 @@ class AuthSystem {
     }
 
     redirectAfterLogin() {
-        // Update UI to show logged in state
         this.updateUIForLoggedInUser();
         
-        // Scroll to detector section
         setTimeout(() => {
             const detector = document.getElementById('detector');
             if (detector) {
@@ -248,16 +232,13 @@ class AuthSystem {
     }
 
     updateUIForLoggedInUser() {
-        // Update navigation
         const navMenu = document.querySelector('.nav-menu');
         if (navMenu && this.currentUser) {
-            // Hide login and signup links
             const loginLink = document.querySelector('.auth-login');
             const signupLink = document.querySelector('.auth-signup');
             if (loginLink) loginLink.parentElement.style.display = 'none';
             if (signupLink) signupLink.parentElement.style.display = 'none';
 
-            // Add user menu item
             const userItem = document.createElement('li');
             userItem.innerHTML = `
                 <a href="#" class="nav-link user-link">
@@ -267,27 +248,23 @@ class AuthSystem {
             `;
             navMenu.appendChild(userItem);
 
-            // Add logout button
             const logoutItem = document.createElement('li');
             logoutItem.innerHTML = `
                 <a href="#" class="nav-link logout-btn">Logout</a>
             `;
             navMenu.appendChild(logoutItem);
 
-            // Add logout functionality
             logoutItem.addEventListener('click', (e) => {
                 e.preventDefault();
                 this.logout();
             });
 
-            // Add user profile click functionality
             userItem.addEventListener('click', (e) => {
                 e.preventDefault();
                 this.showUserProfile();
             });
         }
 
-        // Show welcome message
         const welcomeMsg = document.createElement('div');
         welcomeMsg.className = 'welcome-message';
         welcomeMsg.innerHTML = `
@@ -314,7 +291,6 @@ class AuthSystem {
 
         document.body.appendChild(welcomeMsg);
 
-        // Close button
         const closeBtn = welcomeMsg.querySelector('.close-welcome');
         closeBtn.addEventListener('click', () => {
             welcomeMsg.style.animation = 'fadeOut 0.3s ease';
@@ -323,7 +299,6 @@ class AuthSystem {
             }, 300);
         });
 
-        // Auto close after 3 seconds
         setTimeout(() => {
             if (welcomeMsg.parentNode) {
                 welcomeMsg.style.animation = 'fadeOut 0.3s ease';
@@ -342,10 +317,8 @@ class AuthSystem {
         this.currentUser = null;
         this.token = null;
         
-        // Show logout message
         this.showAuthNotification('Logged out successfully', 'success');
         
-        // Reload page to reset UI
         setTimeout(() => {
             window.location.reload();
         }, 1000);
@@ -355,7 +328,6 @@ class AuthSystem {
         const stats = this.getUserStats();
         if (!stats) return;
 
-        // Create profile modal
         const profileModal = document.createElement('div');
         profileModal.className = 'profile-modal';
         profileModal.innerHTML = `
@@ -384,7 +356,6 @@ class AuthSystem {
             </div>
         `;
 
-        // Add styles
         profileModal.style.cssText = `
             position: fixed;
             top: 0;
@@ -402,7 +373,6 @@ class AuthSystem {
 
         document.body.appendChild(profileModal);
 
-        // Close functionality
         const closeBtn = profileModal.querySelector('.close-profile');
         closeBtn.addEventListener('click', () => {
             profileModal.style.animation = 'fadeOut 0.3s ease';
@@ -411,7 +381,6 @@ class AuthSystem {
             }, 300);
         });
 
-        // Close on background click
         profileModal.addEventListener('click', (e) => {
             if (e.target === profileModal) {
                 closeBtn.click();
@@ -428,7 +397,6 @@ class AuthSystem {
                 this.currentUser = JSON.parse(savedUser);
                 this.token = savedToken;
                 
-                // Verify token with backend
                 const response = await fetch(`${this.apiBase}/auth/profile`, {
                     headers: {
                         'Authorization': `Bearer ${this.token}`
@@ -438,8 +406,7 @@ class AuthSystem {
                 if (response.ok) {
                     this.updateUIForLoggedInUser();
                 } else {
-                    // Token invalid, clear session
-                    this.logout();
+                                        this.logout();
                 }
             } catch (error) {
                 console.error('Session check error:', error);
@@ -448,8 +415,7 @@ class AuthSystem {
         }
     }
 
-    // Method to increment user analysis count
-    async incrementAnalysisCount() {
+        async incrementAnalysisCount() {
         if (this.currentUser && this.token) {
             try {
                 const response = await fetch(`${this.apiBase}/auth/increment-analysis`, {

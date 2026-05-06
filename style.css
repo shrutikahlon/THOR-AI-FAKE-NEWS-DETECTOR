@@ -1,4 +1,3 @@
-/* Reset and Base Styles */
 * {
     margin: 0;
     padding: 0;
@@ -29,7 +28,6 @@ body {
     line-height: 1.6;
 }
 
-/* Three.js Background */
 #bg-canvas {
     position: fixed;
     top: 0;
@@ -39,7 +37,6 @@ body {
     z-index: -1;
 }
 
-/* Navigation */
 .navbar {
     position: fixed;
     top: 0;
@@ -109,7 +106,6 @@ body {
     width: 100%;
 }
 
-/* User link styles */
 .user-link {
     display: flex;
     align-items: center;
@@ -162,7 +158,6 @@ body {
     transition: 0.3s;
 }
 
-/* Hero Section */
 .hero {
     min-height: 100vh;
     display: flex;
@@ -246,7 +241,6 @@ body {
     transform: rotate(45deg);
 }
 
-/* Glass Card */
 .glass-card {
     background: var(--glass-bg);
     backdrop-filter: blur(20px);
@@ -258,7 +252,6 @@ body {
     box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
 }
 
-/* Detector Section */
 .detector {
     min-height: 100vh;
     display: flex;
@@ -342,7 +335,6 @@ body {
     display: inline-block;
 }
 
-/* Results */
 .results {
     margin-top: 2rem;
     padding-top: 2rem;
@@ -526,7 +518,6 @@ body {
     text-decoration: underline;
 }
 
-/* About Section */
 .about {
     padding: 6rem 2rem;
 }
@@ -585,7 +576,6 @@ body {
     line-height: 1.6;
 }
 
-/* Services Section */
 .services {
     padding: 6rem 2rem;
     background: var(--secondary-bg);
@@ -629,7 +619,6 @@ body {
     line-height: 1.6;
 }
 
-/* Authentication Section */
 .auth {
     padding: 6rem 2rem;
 }
@@ -740,7 +729,6 @@ body {
     box-shadow: 0 10px 30px rgba(136, 136, 136, 0.3);
 }
 
-/* Footer */
 .footer {
     background: var(--secondary-bg);
     padding: 3rem 2rem 1rem;
@@ -811,7 +799,6 @@ body {
     color: var(--text-secondary);
 }
 
-/* Animations */
 .fade-in {
     opacity: 0;
     transform: translateY(30px);
@@ -847,7 +834,6 @@ body {
     100% { transform: rotate(360deg); }
 }
 
-/* Responsive Design */
 @media (max-width: 768px) {
     .nav-menu {
         position: fixed;
@@ -934,7 +920,6 @@ body {
     }
 }
 
-/* Scrollbar Styling */
 ::-webkit-scrollbar {
     width: 8px;
 }
@@ -952,7 +937,6 @@ body {
     background: var(--accent-light);
 }
 
-/* Profile Modal Styles */
 .profile-content {
     background: var(--glass-bg);
     backdrop-filter: blur(20px);

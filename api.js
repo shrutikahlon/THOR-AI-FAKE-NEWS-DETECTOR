@@ -1,21 +1,17 @@
-// API Integration Module for Fake News Detection
 class NewsAPIService {
     constructor() {
-        // API Keys (only used APIs)
         this.apiKeys = {
             newsapi: 'e7ea77c7f3b5419eac4e0844d3a2c17c',
             guardian: 'e15f2f33-91ad-4e3c-ab1a-309a94452d02',
             nytimes: '9Cm9iT2JvN99gzf1bJlZpGRGEKscctFnWD79qyn4CYq1l3t4'
         };
         
-        // API endpoints (only used APIs)
         this.endpoints = {
             newsapi: 'https://newsapi.org/v2/everything',
             guardian: 'https://content.guardianapis.com/search',
             nytimes: 'https://api.nytimes.com/svc/search/v2/articlesearch.json'
         };
         
-        // Trusted sources
         this.trustedSources = [
             'bbc.com',
             'cnn.com',
@@ -37,11 +33,9 @@ class NewsAPIService {
         ];
     }
 
-    // Extract keywords from text
     extractKeywords(text) {
         if (!text) return [];
         
-        // Common stop words to filter out
         const stopWords = new Set([
             'the', 'a', 'an', 'and', 'or', 'but', 'in', 'on', 'at', 'to', 'for',
             'of', 'with', 'by', 'from', 'up', 'about', 'into', 'through', 'during',
@@ -55,26 +49,22 @@ class NewsAPIService {
             'who', 'whom', 'whose', 'where', 'when', 'why', 'how', 'said', 'says'
         ]);
         
-        // Extract words and clean them
         const words = text.toLowerCase()
             .replace(/[^\w\s]/g, ' ')
             .split(/\s+/)
             .filter(word => word.length > 2 && !stopWords.has(word));
         
-        // Count word frequency
         const wordCount = {};
         words.forEach(word => {
             wordCount[word] = (wordCount[word] || 0) + 1;
         });
         
-        // Sort by frequency and return top keywords
         return Object.entries(wordCount)
             .sort((a, b) => b[1] - a[1])
             .slice(0, 5)
             .map(([word]) => word);
     }
 
-    // Search NewsAPI
     async searchNewsAPI(keywords) {
         try {
             const query = keywords.join(' OR ');
@@ -94,7 +84,6 @@ class NewsAPIService {
     }
 
 
-    // Search Guardian API
     async searchGuardian(keywords) {
         try {
             const query = keywords.join(' AND ');
@@ -113,7 +102,6 @@ class NewsAPIService {
         }
     }
 
-    // Search New York Times API
     async searchNYTimes(keywords) {
         try {
             const query = keywords.join(' AND ');
@@ -132,7 +120,6 @@ class NewsAPIService {
         }
     }
 
-    // Format NewsAPI results
     formatNewsAPIResults(articles) {
         return articles.map(article => ({
             title: article.title,
@@ -145,7 +132,6 @@ class NewsAPIService {
     }
 
 
-    // Format Guardian API results
     formatGuardianResults(articles) {
         return articles.map(article => ({
             title: article.webTitle,
@@ -157,7 +143,6 @@ class NewsAPIService {
         }));
     }
 
-    // Format New York Times API results
     formatNYTimesResults(articles) {
         return articles.map(article => ({
             title: article.headline?.main || article.headline,
@@ -169,14 +154,12 @@ class NewsAPIService {
         }));
     }
 
-    // Check if source is trusted
     isTrustedSource(source) {
         if (!source) return false;
         const sourceLower = source.toLowerCase();
         return this.trustedSources.some(trusted => sourceLower.includes(trusted));
     }
 
-    // Search all APIs simultaneously
     async searchAllAPIs(keywords) {
         try {
             const [newsapiResults, guardianResults, nytimesResults] = await Promise.all([
@@ -185,7 +168,6 @@ class NewsAPIService {
                 this.searchNYTimes(keywords)
             ]);
             
-            // Combine and deduplicate results
             const allResults = [...newsapiResults, ...guardianResults, ...nytimesResults];
             const uniqueResults = this.deduplicateResults(allResults);
             
@@ -196,7 +178,6 @@ class NewsAPIService {
         }
     }
 
-    // Remove duplicate articles
     deduplicateResults(articles) {
         const seen = new Set();
         return articles.filter(article => {
@@ -210,7 +191,6 @@ class NewsAPIService {
     }
 
     
-    // AI Text Classification - Lightweight ML-based analysis
     classifyTextWithAI(text) {
         const features = this.extractTextFeatures(text);
         const fakeScore = this.calculateFakeProbability(features);
@@ -227,7 +207,6 @@ class NewsAPIService {
         };
     }
 
-    // Extract AI features from text
     extractTextFeatures(text) {
         const words = text.toLowerCase().split(/\s+/);
         const sentences = text.split(/[.!?]+/).filter(s => s.trim());
@@ -245,50 +224,40 @@ class NewsAPIService {
         };
     }
 
-    // Calculate fake news probability using AI features
     calculateFakeProbability(features) {
         let fakeScore = 0.3; // Base probability
         
-        // Clickbait indicators
         fakeScore += features.clickbaitWords * 0.15;
         
-        // Sensational language
         fakeScore += features.sensationalWords * 0.12;
         
-        // Excessive punctuation (sensationalism)
         if (features.exclamationCount > features.sentenceCount * 0.3) {
             fakeScore += 0.1;
         }
         
-        // Uppercase ratio (shouting)
         if (features.uppercaseRatio > 0.15) {
             fakeScore += 0.08;
         }
         
-        // Short sentences (simplification)
         if (features.avgWordLength < 4 && features.sentenceCount > 3) {
             fakeScore += 0.07;
         }
         
-        // Source credibility (if mentioned)
         fakeScore -= features.sourceCredibility * 0.2;
         
         return Math.min(0.9, Math.max(0.1, fakeScore));
     }
 
-    // Count clickbait words
     countClickbaitWords(words) {
         const clickbaitWords = ['shocking', 'unbelievable', 'incredible', 'amazing', 'you-wont-believe', 'secret', 'revealed', 'exclusive', 'breaking', 'urgent'];
         return words.filter(word => clickbaitWords.includes(word)).length / words.length;
     }
 
-    // Count sensational words
     countSensationalWords(words) {
         const sensationalWords = ['disaster', 'crisis', 'emergency', 'scandal', 'outrage', 'horrifying', 'devastating', 'catastrophic'];
         return words.filter(word => sensationalWords.includes(word)).length / words.length;
     }
 
-    // Assess source credibility mentioned in text
     assessSourceCredibility(text) {
         const credibleSources = ['reuters', 'associated press', 'ap', 'bbc', 'cnn', 'new york times', 'washington post', 'wall street journal'];
         const textLower = text.toLowerCase();
@@ -303,11 +272,9 @@ class NewsAPIService {
         return Math.min(1, credibility);
     }
 
-    // Main search method with AI integration
     async search(keywords) {
         const apiResults = await this.searchAllAPIs(keywords);
         
-        // If we have API results, enhance with AI analysis
         if (apiResults.length > 0) {
             const sampleText = apiResults[0]?.title + ' ' + apiResults[0]?.description;
             if (sampleText) {
